@@ -80,7 +80,7 @@ def main():
         print(f"\n{Fore.GREEN}Fetched and saved details for all champions.{Fore.RESET}")
 
     else:
-        print(f"{Fore.RESET}Data is already up-to-date.")
+        print(f"{Fore.RESET}Version: {Fore.GREEN}{saved_version}{Fore.RESET}.")
 
 
 if __name__ == "__main__":
