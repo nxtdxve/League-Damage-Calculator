@@ -1,8 +1,8 @@
 import requests
 import json
 import os
-
-API_KEY = "your-api-key"  # Replace with your Riot Games API key
+import sys
+from colorama import Fore, init
 
 VERSION_FILE = "data/version.txt"
 
@@ -34,6 +34,17 @@ def save_json_to_file(data, file_path):
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def fetch_and_save_champion_details(champion, version):
+    champion_data = fetch_data_from_riot_api(f"cdn/{version}/data/en_US/champion/{champion}.json", version)
+    save_json_to_file(champion_data, os.path.join('data', 'champions', f'{champion}.json'))
+
+def print_loading_bar(index, total, bar_length=20):
+    filled_length = int(round(bar_length * index / float(total)))
+    percents = round(100.0 * index / float(total), 1)
+    bar = "█" * filled_length + "-" * (bar_length - filled_length)
+    sys.stdout.write(f"\r{Fore.MAGENTA}Loading: {Fore.GREEN}{bar} {Fore.CYAN}{percents}%")
+    sys.stdout.flush()
+
 def main():
     # Get the latest version
     latest_version = get_latest_version()
@@ -58,8 +69,19 @@ def main():
         # Save the new version
         save_version(latest_version)
         print("Data updated to the latest version.")
+
+
+        # Fetch and save details for every champion
+        total_champions = (len(champion_data['data']) + 3)
+        for index, champion_name in enumerate(champion_data['data'], start=1):
+            fetch_and_save_champion_details(champion_name, latest_version)
+            print_loading_bar(index, total_champions)
+
+        print(f"\n{Fore.GREEN}Fetched and saved details for all champions.{Fore.RESET}")
+
     else:
-        print("Data is already up-to-date.")
+        print(f"{Fore.RESET}Data is already up-to-date.")
+
 
 if __name__ == "__main__":
     main()
