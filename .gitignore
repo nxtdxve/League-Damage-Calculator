@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 data/champions/*
+!data/champions/__init__.py
 data/items.json
 data/runes.json
 data/champions.json
